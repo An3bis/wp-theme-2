@@ -7,6 +7,9 @@
  * @package mytheme
  */
 
+require_once 'lib/Products.php';
+require_once 'lib/Taxes.php';
+
 if ( ! function_exists( 'mytheme_setup' ) ) :
 	/**
 	 * Sets up theme defaults and registers support for various WordPress features.
@@ -122,9 +125,11 @@ add_action( 'widgets_init', 'mytheme_widgets_init' );
 function mytheme_scripts() {
 	wp_enqueue_style( 'mytheme-style', get_stylesheet_uri() );
 
-	wp_enqueue_style( 'mytheme-google-fonts', 'https://fonts.googleapis.com/css?family=Lato|Raleway|Ubuntu|Caveat');
+	wp_enqueue_style( 'mytheme-custom-style', get_template_directory_uri() . '/css/main.css');
 
-	wp_enqueue_style( 'mytheme-main', get_template_directory_uri() . '/assets/css/main.css', false);
+	wp_enqueue_style( 'mytheme-bootstrap-css', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css' );
+
+	wp_enqueue_script( 'mytheme-bootstrap-js', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js' );
 
 	wp_enqueue_script( 'mytheme-navigation', get_template_directory_uri() . '/js/navigation.js', array(), '20151215', true );
 
@@ -137,36 +142,90 @@ function mytheme_scripts() {
 add_action( 'wp_enqueue_scripts', 'mytheme_scripts' );
 
 /**
- * Post-types
+ * Custom post-types
  */
-function post_types_init() {
-	register_post_type( 'mytheme_products',
-		array(
-			'labels' => array(
-				'name' => __( 'Products' ),
-				'singular_name' => __( 'Product' )
-			),
-			'public' => true,
-			'has_archive' => true,
-		)
-	);
+function custom_post_types() {
+  register_post_type( 'mytheme_product',
+    array(
+      'labels' => array(
+        'name' => __( 'Products' ),
+        'singular_name' => __( 'Product' )
+      ),
+      'public' => true,
+      'has_archive' => true,
+    )
+  );
 }
-add_action( 'init', 'post_types_init' );
+add_action( 'init', 'custom_post_types' );
 
 /**
- * Taxes
+ * Custom taxo
  */
-function taxonomies_init() {
+function custom_taxonomies() {
 	register_taxonomy(
 		'Color',
-		'mytheme_products',
+		'mytheme_product',
 		array(
-			'label' => __( 'Color' ),
-			'rewrite' => array( 'slug' => 'color' ),
+		  'hierarchical'      => true,
+		  'labels'            => array(
+		     'name'          => _x( 'Edit values', 'taxonomy general name' ),
+		     'singular_name' => _x( 'Color', 'taxonomy singular name' ),
+		     'all_items'     => __( 'All' ),
+		     'edit_item'     => __( 'Edit' ),
+		     'update_item'   => __( 'Update' ),
+		     'add_new_item'  => __( 'Add item' ),
+		     'menu_name'     => __( 'Color' ),
+		  ),
+		  'show_ui'           => true,
+		  'show_admin_column' => true,
+		  'query_var'         => true,
+		  'rewrite'           => array( 'slug' => 'ram' ),
 		)
 	);
+
+	register_taxonomy(
+		'Android',
+		'mytheme_product',
+		array(
+		  'hierarchical'      => true,
+		  'labels'            => array(
+		     'name'          => _x( 'Edit values', 'taxonomy general name' ),
+		     'singular_name' => _x( 'Android', 'taxonomy singular name' ),
+		     'all_items'     => __( 'All' ),
+		     'edit_item'     => __( 'Edit' ),
+		     'update_item'   => __( 'Update' ),
+		     'add_new_item'  => __( 'Add item' ),
+		     'menu_name'     => __( 'Android' ),
+		  ),
+		  'show_ui'           => true,
+		  'show_admin_column' => true,
+		  'query_var'         => true,
+		  'rewrite'           => array( 'slug' => 'ram' ),
+		)
+	);	
+
+	register_taxonomy(
+		'RAM',
+		'mytheme_product',
+		array(
+		  'hierarchical'      => true,
+		  'labels'            => array(
+		     'name'          => _x( 'Edit values', 'taxonomy general name' ),
+		     'singular_name' => _x( 'RAM', 'taxonomy singular name' ),
+		     'all_items'     => __( 'All' ),
+		     'edit_item'     => __( 'Edit' ),
+		     'update_item'   => __( 'Update' ),
+		     'add_new_item'  => __( 'Add item' ),
+		     'menu_name'     => __( 'RAM' ),
+		  ),
+		  'show_ui'           => true,
+		  'show_admin_column' => true,
+		  'query_var'         => true,
+		  'rewrite'           => array( 'slug' => 'ram' ),
+		)
+	);	
 }
-add_action( 'init', 'taxonomies_init' );
+add_action( 'init', 'custom_taxonomies' );
 
 /**
  * Implement the Custom Header feature.

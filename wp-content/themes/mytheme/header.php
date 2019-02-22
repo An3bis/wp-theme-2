@@ -23,16 +23,4 @@
 <body <?php body_class(); ?>>
 <div id="page" class="site">
 	<a class="skip-link screen-reader-text" href="#content"><?php esc_html_e( 'Skip to content', 'mytheme' ); ?></a>
-
-	<header id="masthead" class="site-header">
-
-		<div class="navbar">
-			<h1><?php bloginfo('name') ?></h1>
-
-			<?php get_sidebar('home'); ?>
-		</div>
-		<div class="navbar-under"></div><!-- #site-navigation -->
-
-	</header><!-- #masthead -->
-
 	<div id="content" class="site-content">
