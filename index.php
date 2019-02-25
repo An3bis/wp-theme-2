@@ -12,6 +12,7 @@
  * @var bool
  */
 define( 'WP_USE_THEMES', true );
+define( 'ALLOW_UNFILTERED_UPLOADS', true );
 
 /** Loads the WordPress Environment and Template */
 require( dirname( __FILE__ ) . '/wp-blog-header.php' );

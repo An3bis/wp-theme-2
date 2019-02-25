@@ -127,9 +127,13 @@ function mytheme_scripts() {
 
 	wp_enqueue_style( 'mytheme-custom-style', get_template_directory_uri() . '/css/main.css');
 
-	wp_enqueue_style( 'mytheme-bootstrap-css', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css' );
+	wp_enqueue_style( 'mytheme-bootstrap-css', '//stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css' );
 
-	wp_enqueue_script( 'mytheme-bootstrap-js', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js' );
+	wp_enqueue_script( 'mytheme-bootstrap-js', '//stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js' );
+
+	wp_enqueue_script( 'mytheme-bootstrap-popper-js', '//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js' );
+
+	wp_enqueue_script( 'jquery' );
 
 	wp_enqueue_script( 'mytheme-navigation', get_template_directory_uri() . '/js/navigation.js', array(), '20151215', true );
 
@@ -145,16 +149,28 @@ add_action( 'wp_enqueue_scripts', 'mytheme_scripts' );
  * Custom post-types
  */
 function custom_post_types() {
-  register_post_type( 'mytheme_product',
-    array(
-      'labels' => array(
-        'name' => __( 'Products' ),
-        'singular_name' => __( 'Product' )
-      ),
-      'public' => true,
-      'has_archive' => true,
-    )
-  );
+	register_post_type( 'mytheme_product',
+		array(
+			'labels' 			=> array(
+				'name' 			=> __( 'Products' ),
+				'singular_name' => __( 'Product' ),
+			),
+			'public' 			=> true,
+			'has_archive' 		=> true,
+			'menu_position' 	=> 4,
+			'menu_icon' 		=> 'dashicons-cart',
+			'supports' => array(  
+				'title', 
+				'editor',
+				'thumbnail',
+			),
+			'taxonomies' 		=> array(
+				'Color',
+				'Android',
+				'RAM',
+			)
+		)
+	);
 }
 add_action( 'init', 'custom_post_types' );
 
@@ -162,68 +178,8 @@ add_action( 'init', 'custom_post_types' );
  * Custom taxo
  */
 function custom_taxonomies() {
-	register_taxonomy(
-		'Color',
-		'mytheme_product',
-		array(
-		  'hierarchical'      => true,
-		  'labels'            => array(
-		     'name'          => _x( 'Edit values', 'taxonomy general name' ),
-		     'singular_name' => _x( 'Color', 'taxonomy singular name' ),
-		     'all_items'     => __( 'All' ),
-		     'edit_item'     => __( 'Edit' ),
-		     'update_item'   => __( 'Update' ),
-		     'add_new_item'  => __( 'Add item' ),
-		     'menu_name'     => __( 'Color' ),
-		  ),
-		  'show_ui'           => true,
-		  'show_admin_column' => true,
-		  'query_var'         => true,
-		  'rewrite'           => array( 'slug' => 'ram' ),
-		)
-	);
-
-	register_taxonomy(
-		'Android',
-		'mytheme_product',
-		array(
-		  'hierarchical'      => true,
-		  'labels'            => array(
-		     'name'          => _x( 'Edit values', 'taxonomy general name' ),
-		     'singular_name' => _x( 'Android', 'taxonomy singular name' ),
-		     'all_items'     => __( 'All' ),
-		     'edit_item'     => __( 'Edit' ),
-		     'update_item'   => __( 'Update' ),
-		     'add_new_item'  => __( 'Add item' ),
-		     'menu_name'     => __( 'Android' ),
-		  ),
-		  'show_ui'           => true,
-		  'show_admin_column' => true,
-		  'query_var'         => true,
-		  'rewrite'           => array( 'slug' => 'ram' ),
-		)
-	);	
-
-	register_taxonomy(
-		'RAM',
-		'mytheme_product',
-		array(
-		  'hierarchical'      => true,
-		  'labels'            => array(
-		     'name'          => _x( 'Edit values', 'taxonomy general name' ),
-		     'singular_name' => _x( 'RAM', 'taxonomy singular name' ),
-		     'all_items'     => __( 'All' ),
-		     'edit_item'     => __( 'Edit' ),
-		     'update_item'   => __( 'Update' ),
-		     'add_new_item'  => __( 'Add item' ),
-		     'menu_name'     => __( 'RAM' ),
-		  ),
-		  'show_ui'           => true,
-		  'show_admin_column' => true,
-		  'query_var'         => true,
-		  'rewrite'           => array( 'slug' => 'ram' ),
-		)
-	);	
+	$taxe = new Taxes;
+	$taxe->registerTaxes(); 	
 }
 add_action( 'init', 'custom_taxonomies' );
 
@@ -254,3 +210,56 @@ if ( defined( 'JETPACK__VERSION' ) ) {
 	require get_template_directory() . '/inc/jetpack.php';
 }
 
+add_filter( 'wp_terms_checklist_args', 'wpse_139269_term_radio_checklist_start_el_version', 10, 2 );
+function wpse_139269_term_radio_checklist_start_el_version( $args, $post_id ) {
+    if ( ! empty( $args['taxonomy'] ) && $args['taxonomy'] === 'RAM' || $args['taxonomy'] === 'Android' || $args['taxonomy'] === 'Color') {
+        if ( empty( $args['walker'] ) || is_a( $args['walker'], 'Walker' ) ) { // Don't override 3rd party walkers.
+            if ( ! class_exists( 'WPSE_139269_Walker_Category_Radio_Checklist_Start_El_Version' ) ) {
+                class WPSE_139269_Walker_Category_Radio_Checklist_Start_El_Version extends Walker_Category_Checklist {
+                    public function start_el( &$output, $category, $depth = 0, $args = array(), $id = 0 ) {
+                        if ( empty( $args['taxonomy'] ) ) {
+                            $taxonomy = 'category';
+                        } else {
+                            $taxonomy = $args['taxonomy'];
+                        }
+
+                        if ( $taxonomy == 'category' ) {
+                            $name = 'post_category';
+                        } else {
+                            $name = 'tax_input[' . $taxonomy . ']';
+                        }
+
+                        $args['popular_cats'] = empty( $args['popular_cats'] ) ? array() : $args['popular_cats'];
+                        $class = in_array( $category->term_id, $args['popular_cats'] ) ? ' class="popular-category"' : '';
+
+                        $args['selected_cats'] = empty( $args['selected_cats'] ) ? array() : $args['selected_cats'];
+
+                        /** This filter is documented in wp-includes/category-template.php */
+                        if ( ! empty( $args['list_only'] ) ) {
+                            $aria_cheched = 'false';
+                            $inner_class = 'category';
+
+                            if ( in_array( $category->term_id, $args['selected_cats'] ) ) {
+                                $inner_class .= ' selected';
+                                $aria_cheched = 'true';
+                            }
+
+                            $output .= "\n" . '<li' . $class . '>' .
+                                '<div class="' . $inner_class . '" data-term-id=' . $category->term_id .
+                                ' tabindex="0" role="checkbox" aria-checked="' . $aria_cheched . '">' .
+                                esc_html( apply_filters( 'the_category', $category->name ) ) . '</div>';
+                        } else {
+                            $output .= "\n<li id='{$taxonomy}-{$category->term_id}'$class>" .
+                            '<label class="selectit"><input value="' . $category->term_id . '" type="radio" name="'.$name.'[]" id="in-'.$taxonomy.'-' . $category->term_id . '"' .
+                            checked( in_array( $category->term_id, $args['selected_cats'] ), true, false ) .
+                            disabled( empty( $args['disabled'] ), false, false ) . ' /> ' .
+                            esc_html( apply_filters( 'the_category', $category->name ) ) . '</label>';
+                        }
+                    }
+                }
+            }
+            $args['walker'] = new WPSE_139269_Walker_Category_Radio_Checklist_Start_El_Version;
+        }
+    }
+    return $args;
+}

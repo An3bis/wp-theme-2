@@ -1,0 +1,33 @@
+/*
+	PRODUCT-CARD
+*/
+.card {
+	width: 18rem;
+}
+
+.card-btn {
+	float: right;
+	width: 100%;
+}
+
+.card-title {
+	font-weight: bold;
+	text-align: center;
+}
+
+.card .list-group {
+	margin-left: 0;
+}
+
+.card .list-group-item-name {
+	font-weight: bold;
+	float: left;
+}
+
+.card .list-group-item-value {
+	float: right;
+}
+
+.card-img-top {
+	height: 175px;
+}
