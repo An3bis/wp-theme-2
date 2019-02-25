@@ -1,10 +1,6 @@
 <?php 
 class Taxes 
 {
-	public function __construct() {
-		
-	}
-
 	public function getAllTaxes(): array {
 		return get_taxonomies( array( 'public' => true, '_builtin' => false ) );
 	}

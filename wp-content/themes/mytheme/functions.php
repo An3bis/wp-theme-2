@@ -263,3 +263,9 @@ function wpse_139269_term_radio_checklist_start_el_version( $args, $post_id ) {
     }
     return $args;
 }
+
+add_action('wp_ajax_test', array('test'));
+
+function test() {
+	echo "ok.";
+}
