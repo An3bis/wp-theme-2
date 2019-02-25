@@ -30,22 +30,28 @@
 </form>
 
 <script>   
-$.ajax({
-    type: "POST",
-    url: window.wp_data.ajax_url, 
-    data : {
-        action : 'test', 
-        manufacture_id : manufacture, 
-        year_id : year,
-        screen_id: screen,
-        processor_id: processor,
-        ram_id   : ram,
-        cena_max : maxprice,
-        cena_min : minprice
-        
-    },
-    success: function (data) {
-        alert(1);
-    }   
-});      
+jQuery(document).ready(function($){
+    $('#filter-btn').on('click', function(){
+        alert('ajax');
+        $.ajax({
+            type: "POST",
+            url: window.wp_data.ajax_url, 
+            data : {
+                action : 'test', 
+                manufacture_id : manufacture, 
+                year_id : year,
+                screen_id: screen,
+                processor_id: processor,
+                ram_id   : ram,
+                cena_max : maxprice,
+                cena_min : minprice
+                
+            },
+            success: function (data) {
+                alert(1);
+            }   
+        });  
+    });
+});
+ 
 </script>
