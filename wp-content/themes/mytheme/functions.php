@@ -133,7 +133,7 @@ function mytheme_scripts() {
 
 	wp_enqueue_script( 'mytheme-bootstrap-popper-js', '//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js' );
 
-	wp_enqueue_script( 'jquery' );
+	wp_enqueue_script( 'mytheme-filter-js',  get_template_directory_uri() . '/js/filter.js', array( 'jquery' ) );
 
 	wp_enqueue_script( 'mytheme-navigation', get_template_directory_uri() . '/js/navigation.js', array(), '20151215', true );
 
@@ -142,6 +142,12 @@ function mytheme_scripts() {
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );
 	}
+
+	wp_localize_script( 'mytheme-filter-js', 'ajaxurl', 
+		array(
+			'url' => admin_url('admin-ajax.php')
+		)
+	); 	
 }
 add_action( 'wp_enqueue_scripts', 'mytheme_scripts' );
 
@@ -264,8 +270,11 @@ function wpse_139269_term_radio_checklist_start_el_version( $args, $post_id ) {
     return $args;
 }
 
-add_action('wp_ajax_test', array('test'));
+function my_action_callback() {
+	var_dump ( $_POST );
 
-function test() {
-	echo "ok.";
+    wp_die();
 }
+
+add_action( 'wp_ajax_action', 'my_action_callback', 99 );
+add_action( 'wp_ajax_nopriv_action', 'my_action_callback', 99 );
